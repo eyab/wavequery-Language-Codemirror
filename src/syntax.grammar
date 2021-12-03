@@ -1,0 +1,52 @@
+@top waveText { value }
+
+value{ String | Array | Object | Empty | Signal_string  }
+
+
+String { string }
+Object { "{" list<Property>? "}" }
+Array  { "[" list<value>? "]" }
+
+Property { PropertyName ":" value }
+PropertyName { string }
+
+
+@skip { space | LineComment }
+
+
+@tokens {  
+
+  Signal_name {string}
+
+  Signal_string { Signal_name "[" "  " Format_spec "]" }
+  
+  Format_spec {  "[" Sign "]" Base }
+  
+  Sign { "s" | "u" }
+  
+  Base { "b" | "o" | "d" | "h" }
+
+  string { '"' char* '"' }
+
+  char { $[\u{20}\u{21}\u{23}-\u{5b}\u{5d}-\u{10ffff}] | "\\" esc }
+
+
+  Empty  { "null" }
+
+
+  esc  { $["\\\/bfnrt] }
+
+  LineComment { ";" ![\n]* }
+
+  space { $[ \t\n\r]+ }
+
+  "{" "}" "[" "]"
+
+  Grouping {"[" "group name" "," "[" list<value>? "]" "," "[" list<value>? "]" "]"}
+}
+
+
+list<item> { item ("," item)* }
+
+
+@detectDelim
